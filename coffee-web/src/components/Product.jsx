@@ -9,7 +9,7 @@ const Product = () => {
 
     const handleAddToCart = (item) => {
         console.log('Adding to cart:', item); // Debugging log
-        const existingItemIndex = cart.findIndex(cartItem => cartItem.title === item.title);
+        const existingItemIndex = cart.findIndex(cartItem =>  cartItem.title === item.title);
 
         if (existingItemIndex >= 0) {
             const updatedCart = cart.map((cartItem, index) => 

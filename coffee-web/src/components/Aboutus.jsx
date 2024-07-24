@@ -9,7 +9,7 @@ const Aboutus = () => {
                     <img src={aboutus} alt="About Us" className="rounded-lg shadow-lg" />
                 </div>
                 <div className="w-full lg:w-2/4 p-4 space-y-3">
-                    <h2 className="font-semibold text-3xl">What Makes Our Coffee Special?</h2>
+                    <h2 className="font-semibold text-3xl">What Makes Our Coffee Special ?</h2>
                     <p>
                         Welcome to CoffeeSpot, where passion meets perfection in every cup. From our meticulously sourced beans to our expertly crafted brews, we promise a coffee experience that delights the senses. Join us and discover why CoffeeSpot is more than just a coffee shop—it's your go-to spot for exceptional coffee and community warmth.
                     </p>
