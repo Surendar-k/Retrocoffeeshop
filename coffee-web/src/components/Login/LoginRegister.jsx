@@ -17,29 +17,47 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
   const handleEmailChange = (e) => setEmail(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     if (isLogin) {
-      const user = { username: username, password };
-      console.log('User:', user);
-      // Verify login credentials
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      if (storedUser && storedUser.username === username && storedUser.password === password) {
-        setIsAuthenticated(true);
-        setUsername(username); // Set the username
-        navigate('/');
-      } else {
-        setMessage('Invalid username or password.');
+      try {
+        const response = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setIsAuthenticated(true);
+          setUsername(username);
+          navigate('/');
+        } else {
+          setMessage(data.message || 'Error logging in');
+        }
+      } catch (error) {
+        setMessage('Error logging in');
+        console.error('Login error:', error);
       }
     } else {
-      const newUser = { username, email, password };
-      console.log('newUser:', newUser);
-      // Store user data in localStorage
-      localStorage.setItem('user', JSON.stringify(newUser));
-      setMessage('Registration successful. Please log in.');
-      setAction('');
+      try {
+        const response = await fetch('http://localhost:5000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setMessage('Registration successful. Please log in.');
+          setAction('');
+        } else {
+          setMessage(data.message || 'Error registering');
+        }
+      } catch (error) {
+        setMessage('Error registering');
+        console.error('Registration error:', error);
+      }
     }
   };
 
@@ -60,7 +78,6 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
 
   return (
     <div className="bodyform">
-     
       <div className="content">
         <div className={`wrapper${action}`}>
           <div className="form-box login">

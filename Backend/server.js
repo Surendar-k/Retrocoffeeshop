@@ -60,6 +60,19 @@ app.delete('/reviews/:id', (req, res) => {
     });
 });
 
+// Endpoint to handle user registration
+app.post('/register', (req, res) => {
+    const { username, email, password } = req.body;
+    const sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+    db.query(sql, [username, email, password], (err, result) => {
+        if (err) {
+            console.error('Error registering user:', err);
+            return res.status(500).json({ message: 'Error registering user' });
+        }
+        res.json({ id: result.insertId, username, email });
+    });
+});
+
 // Endpoint to handle user login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
