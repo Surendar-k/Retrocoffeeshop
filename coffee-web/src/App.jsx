@@ -13,10 +13,15 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUsername('');
+  };
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
-        <Navbar isAuthenticated={isAuthenticated} username={username} />
+        <Navbar isAuthenticated={isAuthenticated} username={username} onLogout={handleLogout} />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={

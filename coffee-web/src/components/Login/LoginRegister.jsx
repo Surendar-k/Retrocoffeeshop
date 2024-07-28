@@ -60,52 +60,61 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
 
   return (
     <div className="bodyform">
-      <div className={`wrapper${action}`}>
-        <div className="form-box login">
-          <form onSubmit={handleSubmit}>
-            <h1>Login</h1>
-            <div className="input-box">
-              <FaUser className='icon' />
-              <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
-            </div>
-            <div className="input-box">
-              <FaLock className='icon' />
-              <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
-            </div>
-            <div className="remember-forgot">
-              <label><input type="checkbox" />Remember me!</label>
-              <a href="#">Forgot password?</a>
-            </div>
-            <button type='submit' onClick={() => setIsLogin(true)}>Login</button>
-            <div className="register-link">
-              <p>{"Don't have an account?"} <a href="#" onClick={registerLink}>Register</a></p>
-            </div>
-          </form>
-          {message && <p>{message}</p>}
+      <span className="top-center">
+        <h1>Welcome to CaffeeSpot</h1>
+      </span>
+      <div className="content">
+        <div className="loginimg">
+          <img src="https://t4.ftcdn.net/jpg/01/05/90/77/360_F_105907729_4RzHYsHJ2UFt5koUI19fc6VzyFPEjeXe.jpg" alt="CoffeeSpot" />
         </div>
-        <div className="form-box register">
-          <form onSubmit={handleSubmit}>
-            <h1>Registration</h1>
-            <div className="input-box">
-              <FaUser className='icon' />
-              <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
-            </div>
-            <div className="input-box">
-              <FaEnvelope className='icon' />
-              <input type="email" placeholder='Email' required onChange={handleEmailChange} />
-            </div>
-            <div className="input-box">
-              <FaLock className='icon' />
-              <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
-            </div>
-            <div className="remember-forgot">
-              <label><input type="checkbox" required />I agree to the terms & conditions</label>
-            </div>
-            <button type='submit' onClick={() => setIsLogin(false)}>Register</button>
-            <div className="register-link">
-              <p>Already have an account? <a href="#" onClick={loginLink}>Login</a></p>
-            </div>
-          </form>
+        <div className={`wrapper${action}`}>
+          <div className="form-box login">
+            <form onSubmit={handleSubmit}>
+              <h1>Login</h1>
+              <div className="input-box">
+                <FaUser className='icon' />
+                <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
+              </div>
+              <div className="input-box">
+                <FaLock className='icon' />
+                <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
+              </div>
+              <div className="remember-forgot">
+                <label><input type="checkbox" />Remember me!</label>
+                <a href="#">Forgot password?</a>
+              </div>
+              <button type='submit' onClick={() => setIsLogin(true)}>Login</button>
+              <div className="register-link">
+                <p>{"Don't have an account?"} <a href="#" onClick={registerLink}>Register</a></p>
+              </div>
+            </form>
+            {isLogin && message && <p>{message}</p>}
+          </div>
+          <div className="form-box register">
+            <form onSubmit={handleSubmit}>
+              <h1>Registration</h1>
+              <div className="input-box">
+                <FaUser className='icon' />
+                <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
+              </div>
+              <div className="input-box">
+                <FaEnvelope className='icon' />
+                <input type="email" placeholder='Email' required onChange={handleEmailChange} />
+              </div>
+              <div className="input-box">
+                <FaLock className='icon' />
+                <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
+              </div>
+              <div className="remember-forgot">
+                <label><input type="checkbox" required />I agree to the terms & conditions</label>
+              </div>
+              <button type='submit' onClick={() => setIsLogin(false)}>Register</button>
+              <div className="register-link">
+                <p>Already have an account? <a href="#" onClick={loginLink}>Login</a></p>
+              </div>
+            </form>
+            {!isLogin && message && <p>{message}</p>}
+          </div>
         </div>
       </div>
     </div>

@@ -2,11 +2,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full viewport height */
-    background-color: #333; /* Optional: Set a background color */
-}
-
-.wrapper {
+    height: 100vh;
+    background: linear-gradient(rgb(219, 144, 87), rgb(140, 107, 91), black);
+  }
+  
+  .top-center {
+    color: rgb(255, 255, 254);
+    font-size: 24px;
+    margin-bottom: 40%;
+    font-size: 40px;
+  }
+  
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px; /* Adjust gap as needed */
+  }
+  
+  .loginimg {
+    width: 400px;
+    left: 50px;
+  }
+  
+  .loginimg img {
+    width: 450px; 
+    height: 440px;
+    border-radius: 20px; /* Adjust the width as needed */
+    opacity: 0.5; /* Adjust opacity to make it behind the form */
+  }
+  
+  .wrapper {
     position: relative;
     width: 420px;
     height: 450px;
@@ -16,131 +42,142 @@
     color: rgb(1, 249, 249);
     display: flex;
     align-items: center;
-    transition: height .2s ease;
+    transition: height 0.2s ease;
     overflow: hidden;
-}
-
-.wrapper.active {
+  }
+  
+  .wrapper.active {
     height: 520px;
-}
-
-.wrapper .form-box {
+  }
+  
+  .wrapper .form-box {
     width: 100%;
     padding: 40px;
-}
-
-.wrapper .form-box.login {
-    transition: translate .18s ease;
+  }
+  
+  .wrapper .form-box.login {
+    transition: translate 0.18s ease;
     translate: 0;
-}
-
-.wrapper.active .form-box.login {
+    display: flex;
+    align-items: center;
+    flex-direction: column; /* Add this line */
+  }
+  
+  .wrapper.active .form-box.login {
     transition: none;
     translate: -400px;
-}
-
-.wrapper .form-box.register {
+  }
+  
+  .wrapper .form-box.register {
     position: absolute;
     translate: 400px;
-}
-
-.wrapper.active .form-box.register {
-    transition: translate .1s ease;
+  }
+  
+  .wrapper.active .form-box.register {
+    transition: translate 0.1s ease;
     translate: 0;
-}
-
-form h1 {
+  }
+  
+  form h1 {
     font-size: 36px;
     text-align: center;
     color: rgb(255, 0, 170);
-}
-
-form .input-box {
+  }
+  
+  .form-box .input-box {
     position: relative;
     width: 100%;
     height: 50px;
     margin: 30px 0;
-}
-
-.input-box input {
+  }
+  
+  .input-box input {
     width: 100%;
     height: 80%;
     background: transparent;
     border: none;
     outline: none;
     text-align: center;
-    border: 2px solid rgba(255, 255, 255, .1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 40px;
     font-size: 20px;
     color: #fff;
-}
-
-.input-box input::placeholder {
+  }
+  
+  .input-box input::placeholder {
     color: #8ba3b4;
     font-size: 18px;
-}
-
-.input-box .icon {
+  }
+  
+  .input-box .icon {
     color: #00eef6;
     right: 20px;
     top: 50%;
     translate: 10px 200%;
     font-size: 16px;
-}
-
-form .remember-forgot {
+  }
+  
+  .remember-forgot {
     display: flex;
     justify-content: space-between;
     font-size: 14.5px;
-    margin: -15px 0px 15px 10;
-}
-
-.remember-forgot label input {
+    margin: -15px 0 15px 10;
+  }
+  
+  .remember-forgot label input {
     accent-color: #fff;
     margin-right: 4px;
-}
-
-.remember-forgot a {
+  }
+  
+  .remember-forgot a {
     color: #eeebf1;
     text-decoration: none;
-}
-
-.remember-forgot a:hover {
+  }
+  
+  .remember-forgot a:hover {
     color: rgb(238, 7, 7);
-}
-
-form button {
+  }
+  
+  form button {
     width: 100%;
     height: 45px;
     border: none;
     outline: none;
     border-radius: 40px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     font-size: 16px;
     color: #eff4f1;
     background-color: rgb(47, 200, 47);
     font-weight: bolder;
     margin: 10px 0 -2px;
-}
-
-form .register-link {
+  }
+  
+  .register-link {
     font-size: 14.5px;
     text-align: center;
     margin: 20px 0 15px;
-}
-
-.register-link p {
+  }
+  
+  .register-link p {
     color: #fff;
-}
-
-.register-link p a {
+  }
+  
+  .register-link p a {
     color: #fff;
     text-decoration: none;
     font-weight: 600;
     margin: 5px;
-}
-
-.register-link p a:hover {
+  }
+  
+  .register-link p a:hover {
     color: rgb(255, 0, 170);
-}
+  }
+  
+  .message {
+    font-size: 14px;
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
