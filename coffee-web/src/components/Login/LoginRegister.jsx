@@ -60,13 +60,8 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
 
   return (
     <div className="bodyform">
-      <span className="top-center">
-        <h1>Welcome to CoffeeSpot</h1>
-      </span>
+     
       <div className="content">
-        <div className="loginimg">
-          <img src="https://t4.ftcdn.net/jpg/01/05/90/77/360_F_105907729_4RzHYsHJ2UFt5koUI19fc6VzyFPEjeXe.jpg" alt="CoffeeSpot" />
-        </div>
         <div className={`wrapper${action}`}>
           <div className="form-box login">
             <form onSubmit={handleSubmit}>
