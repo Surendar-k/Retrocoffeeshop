@@ -8,7 +8,7 @@
 
 .wrapper {
     position: relative;
-    width: 420px;
+    width:fit-content; /* Reduced width from 420px to 320px */
     height: 450px;
     background-color: rgb(10, 11, 14);
     backdrop-filter: blur(30px);
