@@ -1,2 +1,4 @@
 [build]
-  publish = "coffee-web/build"
+  base = "coffee-web"
+  publish = "build"
+  command = "npm run build"
