@@ -61,7 +61,7 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
   return (
     <div className="bodyform">
       <span className="top-center">
-        <h1>Welcome to CaffeeSpot</h1>
+        <h1>Welcome to CoffeeSpot</h1>
       </span>
       <div className="content">
         <div className="loginimg">
