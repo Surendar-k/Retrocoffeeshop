@@ -25,7 +25,7 @@ db.connect(err => {
 
 // Endpoint to handle reviews
 app.post('/reviews', (req, res) => {
-    const { title, review, rating, img } = req.body;
+    const { title,review, rating, img } = req.body;
 
     console.log('Received data:', { title, review, rating, img });
 
