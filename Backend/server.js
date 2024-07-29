@@ -26,21 +26,26 @@ db.connect(err => {
 // Endpoint to handle reviews
 app.post('/reviews', (req, res) => {
     const { title, review, rating, img } = req.body;
+
+    console.log('Received data:', { title, review, rating, img });
+
     const sql = 'INSERT INTO reviews (title, review, rating, img) VALUES (?, ?, ?, ?)';
     db.query(sql, [title, review, rating, img], (err, result) => {
         if (err) {
             console.error('Error inserting review:', err);
             return res.status(500).json({ message: 'Error inserting review' });
         }
+        console.log('Review inserted with ID:', result.insertId);
         res.json({ id: result.insertId, title, review, rating, img });
     });
 });
+
 
 app.get('/reviews', (req, res) => {
     const sql = 'SELECT * FROM reviews ORDER BY created_at DESC';
     db.query(sql, (err, results) => {
         if (err) {
-            console.error('Error fetching reviews:', err);
+            console.error('Error fetching reviews:', err); // Debug log
             return res.status(500).json({ message: 'Error fetching reviews' });
         }
         res.json(results);
@@ -50,11 +55,16 @@ app.get('/reviews', (req, res) => {
 // Endpoint to delete reviews
 app.delete('/reviews/:id', (req, res) => {
     const { id } = req.params;
+    console.log(`Received DELETE request for review with id: ${id}`); // Debug log
+
     const sql = 'DELETE FROM reviews WHERE id = ?';
     db.query(sql, [id], (err, result) => {
         if (err) {
-            console.error('Error deleting review:', err);
+            console.error('Error deleting review:', err); // Debug log
             return res.status(500).json({ success: false, message: 'Failed to delete review' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Review not found' });
         }
         res.json({ success: true });
     });
@@ -66,7 +76,7 @@ app.post('/register', (req, res) => {
     const sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
     db.query(sql, [username, email, password], (err, result) => {
         if (err) {
-            console.error('Error registering user:', err);
+            console.error('Error registering user:', err); // Debug log
             return res.status(500).json({ message: 'Error registering user' });
         }
         res.json({ id: result.insertId, username, email });
@@ -79,7 +89,7 @@ app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM users WHERE username = ?';
     db.query(sql, [username], (err, results) => {
         if (err) {
-            console.error('Error querying user:', err);
+            console.error('Error querying user:', err); // Debug log
             return res.status(500).json({ message: 'Error logging in' });
         }
         if (results.length === 0) {
