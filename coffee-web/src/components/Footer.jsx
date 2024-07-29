@@ -2,7 +2,7 @@ import { SiCoffeescript } from 'react-icons/si';
 
 const Footer = () => {
     return (
-        <div className="bg-gradient-to-r from-[#FFDCAB] to-[#AB6B2E] text-black rounded-t-3xl mt-8 md:mt-0">
+        <div id="footer" className="bg-gradient-to-r from-[#FFDCAB] to-[#AB6B2E] text-black rounded-t-3xl mt-8 md:mt-0 ">
             <div className="flex flex-col md:flex-row justify-between p-8 md:px-32 px-5">
                 <div className="w-full md:w-1/4">
                     <h1 className="font-bold text-xl pb-4">CoffeeSpot <SiCoffeescript size={25} className="inline-block ml-2" /></h1>
@@ -33,4 +33,5 @@ const Footer = () => {
         </div>
     );
 };
+
 export default Footer;

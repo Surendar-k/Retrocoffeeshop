@@ -79,29 +79,29 @@ const Navbar = ({ isAuthenticated, username, onLogout }) => {
         </div>
       </div>
       <nav className={menu ? "md:hidden" : "hidden"}>
-        <div className="flex flex-col items-center text-lg font-medium gap-8">
-          <ScrollLink to="home" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer hover:text-yellow-200" onClick={closeMenu}>
+        <div className="flex flex-col items-center text-lg font-medium gap-8 bg-black">
+          <ScrollLink to="home" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer text-white  hover:text-yellow-200" onClick={closeMenu}>
             Home
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform group-hover:scale-x-100"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform text-white  group-hover:scale-x-100"></span>
           </ScrollLink>
-          <ScrollLink to="menu" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer hover:text-yellow-200">
+          <ScrollLink to="menu" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer text-white  hover:text-yellow-200">
             Menu
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform group-hover:scale-x-100"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform text-white  group-hover:scale-x-100"></span>
           </ScrollLink>
-          <ScrollLink to="aboutus" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer hover:text-yellow-200">
+          <ScrollLink to="aboutus" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer text-white  hover:text-yellow-200">
             About Us
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform group-hover:scale-x-100"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform text-white  group-hover:scale-x-100"></span>
           </ScrollLink>
-          <ScrollLink to="products" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer hover:text-yellow-200">
+          <ScrollLink to="products" spy={true} smooth={true} duration={500} className="group relative text-white  inline-block cursor-pointer hover:text-yellow-200">
             Products
-            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform group-hover:scale-x-100"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left  transition-transform group-hover:scale-x-100"></span>
           </ScrollLink>
-          <ScrollLink to="reviews" spy={true} smooth={true} duration={500} className="group relative inline-block cursor-pointer hover:text-yellow-200">
+          <ScrollLink to="reviews" spy={true} smooth={true} duration={500} className="group relative text-white  inline-block cursor-pointer hover:text-yellow-200">
             Reviews
             <span className="absolute inset-x-0 bottom-0 h-0.5 bg-black transform scale-x-0 origin-left transition-transform group-hover:scale-x-100"></span>
           </ScrollLink>
           {isAuthenticated && (
-            <div className="relative flex items-center group relative inline-block cursor-pointer hover:text-yellow-200">
+            <div className="relative flex items-center group text-white  relative inline-block cursor-pointer hover:text-yellow-200">
               <img
                 src="../assets/images/defaultavatar.png" // Replace with the path to the user's avatar image
                 alt="User Avatar"
