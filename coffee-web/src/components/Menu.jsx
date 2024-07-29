@@ -14,7 +14,7 @@ const Menu = () => {
   const [cart, setCart] = useState([]);
 
   const handleAddToCart = (item) => {
-    const existingItemIndex = cart.findIndex(cartItem => cartItem.title  === item.title && cartItem.isHot === item.isHot);
+    const existingItemIndex = cart.findIndex(cartItem => cartItem.title === item.title && cartItem.isHot === item.isHot);
 
     if (existingItemIndex >= 0) {
       const updatedCart = cart.map((cartItem, index) => 

@@ -25,21 +25,26 @@ db.connect(err => {
 
 // Endpoint to handle reviews
 app.post('/reviews', (req, res) => {
-    const { title,review, rating, img } = req.body;
+    const { title, review, rating, img } = req.body;
+    console.log(`Received POST request to add review with title: ${title}`); // Debug log
 
-    console.log('Received data:', { title, review, rating, img });
+    // Validate request data
+    if (!title || !review || !rating || !img) {
+        console.error('Missing fields in the request body'); // Debug log
+        return res.status(400).json({ message: 'All fields are required' });
+    }
 
+    // Insert data into the database
     const sql = 'INSERT INTO reviews (title, review, rating, img) VALUES (?, ?, ?, ?)';
     db.query(sql, [title, review, rating, img], (err, result) => {
         if (err) {
-            console.error('Error inserting review:', err);
+            console.error('Error inserting review:', err); // Debug log
             return res.status(500).json({ message: 'Error inserting review' });
         }
-        console.log('Review inserted with ID:', result.insertId);
+        console.log(`Review inserted with ID: ${result.insertId}`); // Debug log
         res.json({ id: result.insertId, title, review, rating, img });
     });
 });
-
 
 app.get('/reviews', (req, res) => {
     const sql = 'SELECT * FROM reviews ORDER BY created_at DESC';
