@@ -1,3 +1,4 @@
+import { useState } from "react";
 import MenuCard from "../layouts/MenuCard";
 import cappuccino from "../assets/images/cappuccino.png";
 import caramel_latteecoffee from "../assets/images/caramel_latteecoffee.png";
@@ -8,7 +9,6 @@ import mocha from "../assets/images/mocha.png";
 import americano from "../assets/images/americano.png";
 import kakako from "../assets/images/kakako.png";
 import coldbrew from "../assets/images/coldbrew.png";
-import { useState } from "react";
 
 const Menu = () => {
   const [cart, setCart] = useState([]);

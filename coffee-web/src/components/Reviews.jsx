@@ -37,7 +37,7 @@ const Reviews = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewReview({ ...newReview, [name]: value });
+        setNewReview(prev => ({ ...prev, [name]: name === 'rating' ? Number(value) : value }));
     };
 
     const handleFormSubmit = (e) => {
@@ -105,7 +105,7 @@ const Reviews = () => {
                         className="p-2 border rounded"
                         min="0"
                         max="5"
-                        step="0.1" // Allows for decimal input
+                        step="0.1"
                     />
                     <button 
                         type="submit" 

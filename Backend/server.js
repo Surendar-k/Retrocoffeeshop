@@ -25,18 +25,19 @@ db.connect(err => {
 
 // Endpoint to handle reviews
 app.post('/reviews', (req, res) => {
-    const { title, review, rating, img } = req.body;
-    console.log(`Received POST request to add review with title: ${title}`); // Debug log
+    console.log('Received POST request to add review');
+    console.log('Request body:', req.body); // Debug log
 
-    // Validate request data
-    if (!title || !review || !rating || !img) {
+    const { title, review, rating, img } = req.body;
+
+    // Check if required fields are provided
+    if (!title || !review || rating === undefined) {
         console.error('Missing fields in the request body'); // Debug log
-        return res.status(400).json({ message: 'All fields are required' });
+        return res.status(400).json({ message: 'Title, review, and rating are required' });
     }
 
-    // Insert data into the database
     const sql = 'INSERT INTO reviews (title, review, rating, img) VALUES (?, ?, ?, ?)';
-    db.query(sql, [title, review, rating, img], (err, result) => {
+    db.query(sql, [title, review, rating, img || null], (err, result) => {
         if (err) {
             console.error('Error inserting review:', err); // Debug log
             return res.status(500).json({ message: 'Error inserting review' });
@@ -46,6 +47,7 @@ app.post('/reviews', (req, res) => {
     });
 });
 
+// Endpoint to get reviews
 app.get('/reviews', (req, res) => {
     const sql = 'SELECT * FROM reviews ORDER BY created_at DESC';
     db.query(sql, (err, results) => {
@@ -78,6 +80,10 @@ app.delete('/reviews/:id', (req, res) => {
 // Endpoint to handle user registration
 app.post('/register', (req, res) => {
     const { username, email, password } = req.body;
+    // Validate request data
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
     const sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
     db.query(sql, [username, email, password], (err, result) => {
         if (err) {
