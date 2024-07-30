@@ -115,5 +115,76 @@ app.post('/login', (req, res) => {
     });
 });
 
+// Endpoint to handle adding menu items
+// Endpoint to handle adding menu items
+app.post('/menu', (req, res) => {
+    const { title, value, isHot, isCold } = req.body;
+
+    if (!title || value === undefined || isHot === undefined || isCold==undefined) {
+        return res.status(400).json({ message: 'Title, value, and isHot are required' });
+    }
+
+    const sql = 'INSERT INTO menu (title, value, isHot, isCold) VALUES (?, ?, ?, ?)';
+    db.query(sql, [title, value, isHot,isCold], (err, result) => {
+        if (err) {
+            console.error('Error inserting menu item:', err);
+            return res.status(500).json({ message: 'Error inserting menu item' });
+        }
+        res.json({ id: result.insertId, title, value, isHot });
+    });
+});
+
+
+// Endpoint to retrieve menu items
+app.get('/menu', async (req, res) => {
+    try {
+        const sql = 'SELECT * FROM menu ORDER BY id ASC';
+        const [results] = await db.query(sql);
+
+        res.json(results);
+    } catch (err) {
+        console.error('Error fetching menu items:', err);
+        res.status(500).json({ message: 'Error fetching menu items' });
+    }
+});
+
+
+
+// Endpoint to handle adding products
+// Endpoint to handle adding products
+app.post('/products', (req, res) => {
+    const { title, price, img } = req.body;
+
+    if (!title || price === undefined) {
+        return res.status(400).json({ message: 'Title and price are required' });
+    }
+
+    const sql = 'INSERT INTO products (title, price, img) VALUES (?, ?, ?)';
+    db.query(sql, [title, price, img || null], (err, result) => {
+        if (err) {
+            console.error('Error inserting product:', err);
+            return res.status(500).json({ message: 'Error inserting product' });
+        }
+        res.json({ id: result.insertId, title, price, img });
+    });
+});
+
+
+// Endpoint to retrieve products
+app.get('/products', async (req, res) => {
+    try {
+        const sql = 'SELECT * FROM products ORDER BY id ASC';
+        const [results] = await db.query(sql);
+
+        res.json(results);
+    } catch (err) {
+        console.error('Error fetching products:', err);
+        res.status(500).json({ message: 'Error fetching products' });
+    }
+});
+
+
+
+
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
