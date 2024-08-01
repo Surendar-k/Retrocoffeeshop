@@ -149,41 +149,33 @@ app.get('/menu', async (req, res) => {
 });
 
 
-
-// Endpoint to handle adding products
-// Endpoint to handle adding products
 app.post('/products', (req, res) => {
-    const { title, price, img } = req.body;
+    const { title, price, img, quantity } = req.body;
 
     if (!title || price === undefined) {
         return res.status(400).json({ message: 'Title and price are required' });
     }
 
-    const sql = 'INSERT INTO products (title, price, img) VALUES (?, ?, ?)';
-    db.query(sql, [title, price, img || null], (err, result) => {
+    const sql = 'INSERT INTO products (title, price, img, quantity) VALUES (?, ?, ?, ?)';
+    db.query(sql, [title, price, img || null, quantity || 0], (err, result) => {
         if (err) {
             console.error('Error inserting product:', err);
             return res.status(500).json({ message: 'Error inserting product' });
         }
-        res.json({ id: result.insertId, title, price, img });
+        res.json({ id: result.insertId, title, price, img, quantity });
     });
 });
 
-
-// Endpoint to retrieve products
-app.get('/products', async (req, res) => {
-    try {
-        const sql = 'SELECT * FROM products ORDER BY id ASC';
-        const [results] = await db.query(sql);
-
+app.get('/products', (req, res) => {
+    const sql = 'SELECT * FROM products';
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching products:', err);
+            return res.status(500).json({ message: 'Error fetching products' });
+        }
         res.json(results);
-    } catch (err) {
-        console.error('Error fetching products:', err);
-        res.status(500).json({ message: 'Error fetching products' });
-    }
+    });
 });
-
-
 
 
 const PORT = 5000;

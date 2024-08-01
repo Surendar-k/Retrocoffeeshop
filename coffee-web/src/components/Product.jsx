@@ -10,7 +10,6 @@ const Product = () => {
     const handleAddToCart = (item) => {
         console.log('Adding to cart:', item); // Debugging log
         const existingItemIndex = cart.findIndex(cartItem => cartItem.title === item.title);
-
         if (existingItemIndex >= 0) {
             const updatedCart = cart.map((cartItem, index) =>
                 index === existingItemIndex
@@ -34,9 +33,9 @@ const Product = () => {
         <div className="min-h-screen flex flex-col justify-center lg:px-32 px-5 bg-gradient-to-r from-[#d5c6b3] to-[#c38e5a]">
             <h1 className="font-semibold text-center text-4xl lg:mt-14 mt-24 mb-8">Our Products</h1>
             <div className="flex flex-col lg:flex-row gap-12 justify-center">
-                <ProductCard img={nespresso} title="Nespresso" price="$14.00" onAddToCart={handleAddToCart} />
-                <ProductCard img={chemex} title="Chemex" price="$10.50" onAddToCart={handleAddToCart} />
-                <ProductCard img={aeropress} title="Aeropress" price="$15.00" onAddToCart={handleAddToCart} />
+                <ProductCard img={nespresso} title="Nespresso" price="$14.00" onAddToCart={() => handleAddToCart({ title: 'Nespresso', price: '$14.00', img: nespresso })} />
+                <ProductCard img={chemex} title="Chemex" price="$10.50" onAddToCart={() => handleAddToCart({ title: 'Chemex', price: '$10.50', img: chemex })} />
+                <ProductCard img={aeropress} title="Aeropress" price="$15.00" onAddToCart={() => handleAddToCart({ title: 'Aeropress', price: '$15.00', img: aeropress })} />
             </div>
             <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4 mt-8">
                 <h2 className="font-bold text-center">Here is Your Cart</h2>
