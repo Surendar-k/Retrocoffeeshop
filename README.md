@@ -40,7 +40,7 @@ Future Improvements:
     Enhancing the UI with more interactive elements.
 
 Screenshots:
-<img src="LoginPage">
+<img src="LoginPage.png">
 
 
 
