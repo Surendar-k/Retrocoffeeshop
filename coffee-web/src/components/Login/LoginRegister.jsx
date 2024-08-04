@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './LoginRegister.css';
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import PropTypes from 'prop-types';
+import { auth } from './firebase';  // Import the auth object from firebase.js
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
   const [action, setAction] = useState('');
@@ -21,49 +23,32 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    if (isLogin) {
-      try {
-        const response = await fetch('http://localhost:5000/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setIsAuthenticated(true);
-          setUsername(username);
-          navigate('/');
-        } else {
-          setMessage(data.message || 'Error logging in');
-        }
-      } catch (error) {
-        setMessage('Error logging in');
-        console.error('Login error:', error);
+    try {
+      if (isLogin) {
+        // Login user
+        await signInWithEmailAndPassword(auth, email, password);
+        setIsAuthenticated(true);
+        setUsername(username);  // Set the username for the current session
+        navigate('/');
+      } else {
+        // Register new user
+        await createUserWithEmailAndPassword(auth, email, password);
+        setMessage('Registration successful. Please log in.');
+        setAction('');
       }
-    } else {
-      try {
-        const response = await fetch('http://localhost:5000/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setMessage('Registration successful. Please log in.');
-          setAction('');
-        } else {
-          setMessage(data.message || 'Error registering');
-        }
-      } catch (error) {
-        setMessage('Error registering');
-        console.error('Registration error:', error);
-      }
+    } catch (error) {
+      setMessage(error.message);
+      console.error(isLogin ? 'Login error:' : 'Registration error:', error);
     }
   };
 
   const validateForm = () => {
     if (!username || !password || (!isLogin && !email)) {
       setMessage('All fields are required.');
+      return false;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setMessage('Invalid email address.');
       return false;
     }
     if (password.length < 6) {

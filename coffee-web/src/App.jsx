@@ -8,14 +8,33 @@ import Product from "./components/Product";
 import Footer from "./components/Footer";
 import Reviews from "./components/Reviews";
 import LoginRegister from "./components/Login/LoginRegister";
+import { useEffect } from 'react';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
 
+  useEffect(() => {
+    const storedAuth = localStorage.getItem('isAuthenticated');
+    const storedUsername = localStorage.getItem('username');
+    if (storedAuth === 'true') {
+      setIsAuthenticated(true);
+      setUsername(storedUsername || '');
+    }
+  }, []);
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUsername('');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('username');
+  };
+
+  const handleLogin = (username) => {
+    setIsAuthenticated(true);
+    setUsername(username);
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('username', username);
   };
 
   return (
@@ -44,10 +63,10 @@ const App = () => {
                   </section>
                 </>
               ) : (
-                <LoginRegister setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />
+                <LoginRegister setIsAuthenticated={handleLogin} setUsername={setUsername} />
               )
             } />
-            <Route path="/login" element={<LoginRegister setIsAuthenticated={setIsAuthenticated} setUsername={setUsername} />} />
+            <Route path="/login" element={<LoginRegister setIsAuthenticated={handleLogin} setUsername={setUsername} />} />
           </Routes>
         </main>
         <Footer />
