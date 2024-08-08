@@ -3,6 +3,8 @@ import ProductCard from "../layouts/ProductCard";
 import nespresso from "../assets/images/nespresso.png";
 import chemex from "../assets/images/chemex.png";
 import aeropress from "../assets/images/aeropress.png";
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from './Login/firebase'; // Ensure your Firebase setup is correctly imported
 
 const Product = () => {
     const [cart, setCart] = useState([]);
@@ -21,6 +23,28 @@ const Product = () => {
             setCart([...cart, { ...item, quantity: 1 }]);
         }
     };
+
+    const handlePlaceOrder = async () => {
+        try {
+            const ordersCollectionRef = collection(db, 'products');
+            for (const item of cart) {
+                await addDoc(ordersCollectionRef, {
+                    title: item.title,
+                    price: item.price,
+                    quantity: item.quantity,
+                    timestamp: serverTimestamp(),
+                });
+            }
+            alert('Order placed successfully! Redirecting to the payment gateway...');
+            window.location.href = 'https://www.cashfree.com/payment-gateway-india/?utm_campaign=cf_searchads_pg_core_highintent_roi&utm_source=googleads&utm_medium=cpc&utm_content=697345046857&utm_term=payment%20gateway&utm_adgroup=&device=c&utm_matchtype=e&gad_source=1&gclid=CjwKCAjw2dG1BhB4EiwA998cqN3en5A0z20rH3qmFQoi4b5qDcjgsq_g51YI6PGjlnDL5BOIv3RDCRoCUAoQAvD_BwE';
+            setCart([]); // Clear the cart after placing the order
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Error placing order, please try again.');
+        }
+    };
+
+    
 
     const totalValue = cart.reduce((sum, item) => {
         const itemValue = parseFloat(item.price.replace('$', ''));
@@ -53,6 +77,14 @@ const Product = () => {
                             <span>${totalValue}</span>
                         </div>
                     </>
+                )}
+                {cart.length > 0 && (
+                    <button
+                        onClick={handlePlaceOrder}
+                        className="bg-green-500 text-white py-2 px-4 rounded mt-4 self-center"
+                    >
+                        Place Order
+                    </button>
                 )}
             </div>
         </div>

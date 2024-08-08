@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginRegister.css';
-import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import PropTypes from 'prop-types';
-import { auth } from './firebase';  // Import the auth object from firebase.js
+import { auth, db } from '../Login/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
   const [action, setAction] = useState('');
@@ -25,14 +26,21 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
 
     try {
       if (isLogin) {
-        // Login user
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setUsername(userDoc.data().username);
+        }
         setIsAuthenticated(true);
-        setUsername(username);  // Set the username for the current session
         navigate('/');
       } else {
-        // Register new user
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        await setDoc(doc(db, 'users', user.uid), {
+          username: username,
+          email: email,
+        });
         setMessage('Registration successful. Please log in.');
         setAction('');
       }
@@ -43,11 +51,11 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
   };
 
   const validateForm = () => {
-    if (!username || !password || (!isLogin && !email)) {
+    if (!password || (!isLogin && (!username || !email))) {
       setMessage('All fields are required.');
       return false;
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    if (!isLogin && !/\S+@\S+\.\S+/.test(email)) {
       setMessage('Invalid email address.');
       return false;
     }
@@ -58,54 +66,92 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
     return true;
   };
 
-  const registerLink = () => setAction(' active');
-  const loginLink = () => setAction('');
+  const registerLink = () => {
+    setIsLogin(false);
+    setAction(' active');
+    setMessage('');
+  };
+  const loginLink = () => {
+    setIsLogin(true);
+    setAction('');
+    setMessage('');
+  };
 
   return (
     <div className="bodyform">
       <div className="content">
         <div className={`wrapper${action}`}>
-          <div className="form-box login">
+          <div className={`form-box login ${isLogin ? 'active' : ''}`}>
             <form onSubmit={handleSubmit}>
               <h1>Login</h1>
               <div className="input-box">
-                <FaUser className='icon' />
-                <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
+                <FaEnvelope className='icon' />
+                <input
+                  type="email"
+                  placeholder='Email'
+                  required
+                  onChange={handleEmailChange}
+                  value={email}
+                />
               </div>
               <div className="input-box">
                 <FaLock className='icon' />
-                <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
+                <input
+                  type="password"
+                  placeholder='Password'
+                  required
+                  onChange={handlePasswordChange}
+                  value={password}
+                />
               </div>
               <div className="remember-forgot">
                 <label><input type="checkbox" />Remember me!</label>
                 <a href="#">Forgot password?</a>
               </div>
-              <button type='submit' onClick={() => setIsLogin(true)}>Login</button>
+              <button type='submit'>Login</button>
               <div className="register-link">
                 <p>{"Don't have an account?"} <a href="#" onClick={registerLink}>Register</a></p>
               </div>
             </form>
             {isLogin && message && <p>{message}</p>}
           </div>
-          <div className="form-box register">
+          <div className={`form-box register ${!isLogin ? 'active' : ''}`}>
             <form onSubmit={handleSubmit}>
               <h1>Registration</h1>
               <div className="input-box">
                 <FaUser className='icon' />
-                <input type="text" placeholder='Username' required onChange={handleUsernameChange} />
+                <input
+                  type="text"
+                  placeholder='Username'
+                  required
+                  onChange={handleUsernameChange}
+                  value={username}
+                />
               </div>
               <div className="input-box">
                 <FaEnvelope className='icon' />
-                <input type="email" placeholder='Email' required onChange={handleEmailChange} />
+                <input
+                  type="email"
+                  placeholder='Email'
+                  required
+                  onChange={handleEmailChange}
+                  value={email}
+                />
               </div>
               <div className="input-box">
                 <FaLock className='icon' />
-                <input type="password" placeholder='Password' required onChange={handlePasswordChange} />
+                <input
+                  type="password"
+                  placeholder='Password'
+                  required
+                  onChange={handlePasswordChange}
+                  value={password}
+                />
               </div>
               <div className="remember-forgot">
                 <label><input type="checkbox" required />I agree to the terms & conditions</label>
               </div>
-              <button type='submit' onClick={() => setIsLogin(false)}>Register</button>
+              <button type='submit'>Register</button>
               <div className="register-link">
                 <p>Already have an account? <a href="#" onClick={loginLink}>Login</a></p>
               </div>

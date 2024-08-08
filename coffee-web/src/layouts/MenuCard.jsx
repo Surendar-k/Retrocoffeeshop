@@ -3,10 +3,6 @@ import { useState } from 'react';
 import { FaShoppingCart } from "react-icons/fa";
 
 const MenuCard = ({ img, title, value, onAddToCart }) => {
-
-
-  
-
   const [isHot, setIsHot] = useState(true);
 
   const handleAddToMenu = async () => {

@@ -67,6 +67,7 @@ const App = () => {
               )
             } />
             <Route path="/login" element={<LoginRegister setIsAuthenticated={handleLogin} setUsername={setUsername} />} />
+     
           </Routes>
         </main>
         <Footer />

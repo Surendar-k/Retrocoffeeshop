@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Reviewscard from "../layouts/Reviewscard";
-import axios from "axios";
+import { db } from './Login/firebase'; // Import the Firestore instance
+import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'; // Import Firestore functions
 import defaultImage from '../assets/images/defaultavatar.png';
 
 const Reviews = () => {
@@ -10,29 +11,29 @@ const Reviews = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        setLoading(true);
-        axios.get('http://localhost:5000/reviews')
-            .then(response => {
-                setReviews(response.data);
-                setLoading(false);
-            })
-            .catch(error => {
+        const fetchReviews = async () => {
+            setLoading(true);
+            try {
+                const querySnapshot = await getDocs(collection(db, 'reviews'));
+                const reviewsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setReviews(reviewsData);
+            } catch (error) {
                 console.error('Error fetching reviews:', error);
                 setError('Error fetching reviews');
-                setLoading(false);
-            });
+            }
+            setLoading(false);
+        };
+
+        fetchReviews();
     }, []);
 
-    const handleDelete = (id) => {
-        axios.delete(`http://localhost:5000/reviews/${id}`)
-            .then(response => {
-                if (response.data.success) {
-                    setReviews(reviews.filter(review => review.id !== id));
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting review:', error);
-            });
+    const handleDelete = async (id) => {
+        try {
+            await deleteDoc(doc(db, 'reviews', id));
+            setReviews(reviews.filter(review => review.id !== id));
+        } catch (error) {
+            console.error('Error deleting review:', error);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -40,21 +41,22 @@ const Reviews = () => {
         setNewReview(prev => ({ ...prev, [name]: name === 'rating' ? Number(value) : value }));
     };
 
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (newReview.title && newReview.review && newReview.rating >= 0 && newReview.rating <= 5) {
             setLoading(true);
-            axios.post('http://localhost:5000/reviews', newReview)
-                .then(response => {
-                    setReviews([response.data, ...reviews]);
-                    setNewReview({ title: '', review: '', rating: 0, img: '' });
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error('Error submitting review:', error);
-                    setError('Error submitting review');
-                    setLoading(false);
+            try {
+                const docRef = await addDoc(collection(db, 'reviews'), {
+                    ...newReview,
+                    timestamp: serverTimestamp(),
                 });
+                setReviews([{ id: docRef.id, ...newReview, timestamp: new Date() }, ...reviews]);
+                setNewReview({ title: '', review: '', rating: 0, img: '' });
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                setError('Error submitting review');
+            }
+            setLoading(false);
         } else {
             setError('Please fill in all fields with valid data.');
         }

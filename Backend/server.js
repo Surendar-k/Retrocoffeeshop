@@ -23,6 +23,9 @@ db.connect(err => {
     console.log('MySQL Connected...');
 });
 
+
+
+
 // Endpoint to handle reviews
 app.post('/reviews', (req, res) => {
     console.log('Received POST request to add review');
