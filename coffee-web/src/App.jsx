@@ -48,8 +48,8 @@ const App = () => {
                 <>
                   <section id="home">
                     <Home />
-                  </section>
-                  <section id="menu">
+                  </section >
+                  <section id="menu" >
                     <Menu />
                   </section>
                   <section id="aboutus">
