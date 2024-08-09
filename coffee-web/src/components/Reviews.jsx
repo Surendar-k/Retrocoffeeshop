@@ -88,7 +88,7 @@ const Reviews = () => {
                         name="title" 
                         value={newReview.title} 
                         onChange={handleInputChange} 
-                        placeholder="Your Title" 
+                        placeholder="Your Name" 
                         className="p-2 border rounded"
                     />
                     <textarea 

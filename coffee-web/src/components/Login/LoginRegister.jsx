@@ -33,7 +33,7 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
           setUsername(userDoc.data().username);
         }
         setIsAuthenticated(true);
-        navigate('/menu'); // Redirect to menu after successful login
+        navigate('/');
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
