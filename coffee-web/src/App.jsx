@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
@@ -8,7 +8,6 @@ import Product from "./components/Product";
 import Footer from "./components/Footer";
 import Reviews from "./components/Reviews";
 import LoginRegister from "./components/Login/LoginRegister";
-import { useEffect } from 'react';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -48,8 +47,8 @@ const App = () => {
                 <>
                   <section id="home">
                     <Home />
-                  </section >
-                  <section id="menu" >
+                  </section>
+                  <section id="menu">
                     <Menu />
                   </section>
                   <section id="aboutus">
@@ -67,7 +66,6 @@ const App = () => {
               )
             } />
             <Route path="/login" element={<LoginRegister setIsAuthenticated={handleLogin} setUsername={setUsername} />} />
-     
           </Routes>
         </main>
         <Footer />
