@@ -19,14 +19,15 @@ const MenuCard = ({ img, title, value, onAddToCart }) => {
         }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Menu item added:', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error adding menu item:', errorData.message || 'Unknown error');
       } else {
-        console.error('Error adding menu item:', data.message);
+        const data = await response.json();
+        console.log('Menu item added:', data);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error.message || 'Unknown error');
     }
   };
 

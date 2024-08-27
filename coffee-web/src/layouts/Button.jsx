@@ -15,7 +15,7 @@ const Button = ({ title, onClick }) => {
 
 Button.propTypes = {
   title: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func, // Changed to optional
 };
 
 export default Button;
