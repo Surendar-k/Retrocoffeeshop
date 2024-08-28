@@ -53,6 +53,7 @@ const Menu = () => {
   };
 
   const handleViewCart = () => {
+    console.log('Navigating to OrderEntry with cart:', cart); // Debugging line
     navigate('/orderentry', { state: { cart } });
   };
 
