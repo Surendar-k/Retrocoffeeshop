@@ -7,6 +7,7 @@ const OrderEntry = () => {
   const initialCart = location.state?.cart || [];
   const [cart, setCart] = useState(initialCart);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleBackToHome = () => {
     navigate('/');
@@ -26,10 +27,17 @@ const OrderEntry = () => {
 
   const handleProceedToCheckout = () => {
     setIsFinalized(true);
+    setShowPayment(true);
   };
 
   const handleEditOrder = () => {
     setIsFinalized(false);
+    setShowPayment(false);
+  };
+
+  const handlePayment = () => {
+    // Placeholder function for payment processing
+    console.log('Processing payment...');
   };
 
   const totalValue = cart
@@ -125,10 +133,30 @@ const OrderEntry = () => {
             <div className="mt-4">
               <button
                 onClick={handleEditOrder}
-                className="bg-green-500 text-white py-2 px-4 rounded"
+                className="bg-green-500 text-white py-2 px-4 rounded mb-4"
               >
                 Edit Order
               </button>
+              {showPayment && (
+                <div className="p-4 bg-white rounded shadow-md">
+                  <h2 className="text-xl font-semibold mb-4">Payment</h2>
+                  <p className="mb-4">Total Bill: ${totalValue}</p>
+                  <div className="mb-4">
+                    <label className="block mb-2">Payment Method:</label>
+                    <select className="w-full p-2 border border-gray-300 rounded">
+                      <option value="credit-card">Credit Card</option>
+                      <option value="paypal">PayPal</option>
+                      <option value="bank-transfer">Bank Transfer</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={handlePayment}
+                    className="bg-green-500 text-white py-2 px-4 rounded"
+                  >
+                    Pay Now
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
