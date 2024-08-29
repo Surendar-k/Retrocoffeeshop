@@ -8,6 +8,10 @@ const OrderEntry = () => {
   const [cart, setCart] = useState(initialCart);
   const [isFinalized, setIsFinalized] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [customerPoints, setCustomerPoints] = useState(0);
+
+  const GST_PERCENT = 18; // Example GST percentage
+  const POINTS_PER_100 = 10; // Points earned for every 100 rs spent
 
   const handleBackToHome = () => {
     navigate('/');
@@ -36,13 +40,31 @@ const OrderEntry = () => {
   };
 
   const handlePayment = () => {
-    // Placeholder function for payment processing
     console.log('Processing payment...');
+    calculateCustomerPoints(totalWithTax);
+    generateDailySalesReport();
+    // Additional payment processing logic goes here
   };
 
-  const totalValue = cart
+  const calculateCustomerPoints = (total) => {
+    const points = Math.floor(total / 100) * POINTS_PER_100;
+    setCustomerPoints(points);
+  };
+
+  const generateDailySalesReport = () => {
+    // Placeholder function to generate daily sales report
+    console.log('Generating daily sales report...');
+    console.log(`Total Sales: Rs. ${totalWithTax}`);
+    console.log(`Customer Points Earned: ${customerPoints}`);
+    // You can implement actual logic to save this report to a database or file
+  };
+
+  const totalWithoutTax = cart
     .reduce((total, item) => total + parseFloat(item.value.slice(1)) * item.quantity, 0)
     .toFixed(2);
+
+  const taxAmount = (totalWithoutTax * GST_PERCENT / 100).toFixed(2);
+  const totalWithTax = (parseFloat(totalWithoutTax) + parseFloat(taxAmount)).toFixed(2);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-r from-[#d5bca4] to-[#a4714c] p-5">
@@ -117,8 +139,16 @@ const OrderEntry = () => {
             </table>
           </div>
           <div className="flex justify-between font-bold mt-4">
+            <span>Subtotal:</span>
+            <span>${totalWithoutTax}</span>
+          </div>
+          <div className="flex justify-between mt-2">
+            <span>GST ({GST_PERCENT}%):</span>
+            <span>${taxAmount}</span>
+          </div>
+          <div className="flex justify-between font-bold mt-4">
             <span>Total:</span>
-            <span>${totalValue}</span>
+            <span>${totalWithTax}</span>
           </div>
           {!isFinalized ? (
             <div className="mt-4 flex space-x-4">
@@ -140,7 +170,7 @@ const OrderEntry = () => {
               {showPayment && (
                 <div className="p-4 bg-white rounded shadow-md">
                   <h2 className="text-xl font-semibold mb-4">Payment</h2>
-                  <p className="mb-4">Total Bill: ${totalValue}</p>
+                  <p className="mb-4">Total Bill: ${totalWithTax}</p>
                   <div className="mb-4">
                     <label className="block mb-2">Payment Method:</label>
                     <select className="w-full p-2 border border-gray-300 rounded">
@@ -157,6 +187,9 @@ const OrderEntry = () => {
                   </button>
                 </div>
               )}
+              <div className="mt-4">
+                <p>Customer Points Earned: {customerPoints}</p>
+              </div>
             </div>
           )}
         </div>

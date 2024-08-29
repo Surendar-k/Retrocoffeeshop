@@ -12,6 +12,7 @@ import caramel_latteecoffee from '../assets/images/caramel_latteecoffee.png';
 import kakako from '../assets/images/kakako.png';
 import coldbrew from '../assets/images/coldbrew.png';
 import { doc, getDoc } from 'firebase/firestore';
+import Button from '../layouts/Button'; // Import Button Component
 
 const Menu = () => {
   const [cart, setCart] = useState([]);
@@ -53,7 +54,6 @@ const Menu = () => {
   };
 
   const handleViewCart = () => {
-    console.log('Navigating to OrderEntry with cart:', cart); // Debugging line
     navigate('/orderentry', { state: { cart } });
   };
 
@@ -81,19 +81,18 @@ const Menu = () => {
         <MenuCard img={kakako} title="Kakako" value="$5.50" onAddToCart={handleAddToCart} />
         <MenuCard img={coldbrew} title="Cold Brew" value="$2.50" onAddToCart={handleAddToCart} />
       </div>
-      <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4">
+      <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4 items-center">
         {cart.length > 0 && (
           <>
-            <div className="flex flex-row justify-between p-2 mt-4 border-t font-bold">
+            <div className="flex flex-row justify-between p-2 mt-4 border-t font-bold w-full max-w-xs">
               <span>Total:</span>
               <span>${totalValue}</span>
             </div>
-            <button
+            <Button // Use the custom Button component
+              title="View Cart"
               onClick={handleViewCart}
-              className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
-            >
-              View Cart
-            </button>
+              className="mt-4" // Centered with margin
+            />
           </>
         )}
       </div>
