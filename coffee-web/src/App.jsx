@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import Reviews from "./components/Reviews";
 import LoginRegister from "./components/Login/LoginRegister";
 import OrderEntry from "./components/OrderEntry";
-
+//lk
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
