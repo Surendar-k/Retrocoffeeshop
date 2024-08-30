@@ -1,5 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import aboutus from "../assets/images/aboutus.png";
+
+
 const Aboutus = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center lg:px-32 px-5 bg-gradient-to-r from-[#bb9d75] to-[#ca8f5b]">
