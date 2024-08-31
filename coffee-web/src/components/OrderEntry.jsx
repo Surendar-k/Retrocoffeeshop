@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const OrderEntry = () => {
   const location = useLocation();
@@ -8,13 +8,12 @@ const OrderEntry = () => {
   const [cart, setCart] = useState(initialCart);
   const [isFinalized, setIsFinalized] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   const handleBackToHome = () => {
-    // Save cart to local storage before navigating
     localStorage.setItem('cart', JSON.stringify(cart));
     navigate('/');
   };
-  
 
   const handleRemoveItem = (index) => {
     setCart(cart.filter((_, i) => i !== index));
@@ -41,11 +40,35 @@ const OrderEntry = () => {
   const handlePayment = () => {
     // Placeholder function for payment processing
     console.log('Processing payment...');
+    alert('Payment Successful');
+    
+    // Clear cart after payment
+    setCart([]);
+    setIsFinalized(false);
+    setShowPayment(false);
+
+    // Optionally, navigate to another page after successful payment
+    // navigate('/some-page');
   };
 
-  const totalValue = cart
-    .reduce((total, item) => total + parseFloat(item.value.slice(1)) * item.quantity, 0)
-    .toFixed(2);
+  const calculateTotalValue = () => {
+    return cart
+      .reduce((total, item) => {
+        const price = parseFloat(item.value.replace('₹', '')); // Remove ₹ and parse as a number
+        return total + price * item.quantity;
+      }, 0)
+      .toFixed(2);
+  };
+
+  const calculatePointsEarned = () => {
+    return Math.floor(calculateTotalValue() / 10);
+  };
+
+  useEffect(() => {
+    setPointsEarned(calculatePointsEarned());
+  }, [cart]);
+
+  const totalValue = calculateTotalValue();
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-r from-[#d5bca4] to-[#a4714c] p-5">
@@ -75,7 +98,7 @@ const OrderEntry = () => {
                 {cart.map((item, index) => (
                   <tr key={index} className="text-center">
                     <td className="border border-gray-300 p-2">{item.title} - {item.isHot ? 'Hot' : 'Cold'}</td>
-                    <td className="border border-gray-300 p-2">${item.value}</td>
+                    <td className="border border-gray-300 p-2">₹{item.value}</td>
                     <td className="border border-gray-300 p-2 flex items-center justify-center space-x-2">
                       {!isFinalized && (
                         <>
@@ -102,7 +125,7 @@ const OrderEntry = () => {
                       )}
                     </td>
                     <td className="border border-gray-300 p-2">
-                      ${(parseFloat(item.value.slice(1)) * item.quantity).toFixed(2)}
+                      ₹{(parseFloat(item.value.replace('₹', '')) * item.quantity).toFixed(2)}
                     </td>
                     {!isFinalized && (
                       <td className="border border-gray-300 p-2">
@@ -121,7 +144,11 @@ const OrderEntry = () => {
           </div>
           <div className="flex justify-between font-bold mt-4">
             <span>Total:</span>
-            <span>${totalValue}</span>
+            <span>₹{totalValue}</span>
+          </div>
+          <div className="flex justify-between font-bold mt-2">
+            <span>Points Earned:</span>
+            <span>{pointsEarned} points</span>
           </div>
           {!isFinalized ? (
             <div className="mt-4 flex space-x-4">
@@ -143,7 +170,7 @@ const OrderEntry = () => {
               {showPayment && (
                 <div className="p-4 bg-white rounded shadow-md">
                   <h2 className="text-xl font-semibold mb-4">Payment</h2>
-                  <p className="mb-4">Total Bill: ${totalValue}</p>
+                  <p className="mb-4">Total Bill: ₹{totalValue}</p>
                   <div className="mb-4">
                     <label className="block mb-2">Payment Method:</label>
                     <select className="w-full p-2 border border-gray-300 rounded">

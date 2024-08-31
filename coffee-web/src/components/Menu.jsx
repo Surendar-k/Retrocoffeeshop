@@ -70,22 +70,22 @@ const Menu = () => {
         </div>
       )}
       <div className="flex flex-wrap pb-8 gap-8 justify-center">
-        <MenuCard img={americano} title="Americano" value="$5.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={choclatecoffee} title="Chocolate Coffee" value="$4.50" onAddToCart={handleAddToCart} />
-        <MenuCard img={cappuccino} title="Cappuccino" value="$4.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={masalachai} title="Masala Chai" value="$3.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={greentea} title="Green Tea" value="$3.50" onAddToCart={handleAddToCart} />
-        <MenuCard img={mocha} title="Mocha" value="$4.50" onAddToCart={handleAddToCart} />
-        <MenuCard img={caramel_latteecoffee} title="Caramel Latte Coffee" value="$4.50" onAddToCart={handleAddToCart} />
-        <MenuCard img={kakako} title="Kakako" value="$5.50" onAddToCart={handleAddToCart} />
-        <MenuCard img={coldbrew} title="Cold Brew" value="$2.50" onAddToCart={handleAddToCart} />
+        <MenuCard img={americano} title="Americano" value="₹375.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={choclatecoffee} title="Chocolate Coffee" value="₹340.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={cappuccino} title="Cappuccino" value="₹300.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={masalachai} title="Masala Chai" value="₹225.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={greentea} title="Green Tea" value="₹263.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={mocha} title="Mocha" value="₹338.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={caramel_latteecoffee} title="Caramel Latte Coffee" value="₹338.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={kakako} title="Kakako" value="₹413.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={coldbrew} title="Cold Brew" value="₹188.00" onAddToCart={handleAddToCart} />
       </div>
       <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4">
         {cart.length > 0 && (
           <>
             <div className="flex flex-row justify-between p-2 mt-4 border-t font-bold">
               <span>Total:</span>
-              <span>${totalValue}</span>
+              <span>₹{totalValue}</span>
             </div>
             <button
               onClick={handleViewCart}
