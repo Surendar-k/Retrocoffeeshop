@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { db } from './Login/firebase'; // Import the Firestore instance
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'; // Import Firestore functions
 
 const OrderEntry = () => {
   const location = useLocation();
@@ -37,11 +39,24 @@ const OrderEntry = () => {
     setShowPayment(false);
   };
 
-  const handlePayment = () => {
-    // Placeholder function for payment processing
+  const handlePayment = async () => {
     console.log('Processing payment...');
     alert('Payment Successful');
     
+    // Save order sales report to Firestore
+    try {
+      await addDoc(collection(db, 'salesReports'), {
+        orderId: `order_${Date.now()}`, // Generate a unique order ID
+        totalAmount: calculateTotalValue(),
+        items: cart,
+        pointsEarned,
+        timestamp: serverTimestamp(), // Timestamp when the report was created
+      });
+      console.log('Sales report added successfully');
+    } catch (error) {
+      console.error('Error adding sales report:', error);
+    }
+
     // Clear cart after payment
     setCart([]);
     setIsFinalized(false);
