@@ -2,24 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuCard from '../layouts/MenuCard';
 import { db } from './Login/firebase';
-import americano from '../assets/images/americano.png';
-import choclatecoffee from '../assets/images/choclatecoffee.png';
-import cappuccino from '../assets/images/cappuccino.png';
-import masalachai from '../assets/images/masalachai.png';
-import greentea from '../assets/images/greentea.png';
-import mocha from '../assets/images/mocha.png';
-import caramel_latteecoffee from '../assets/images/caramel_latteecoffee.png';
-import kakako from '../assets/images/kakako.png';
-import coldbrew from '../assets/images/coldbrew.png';
+import { collection, getDocs } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
 const Menu = () => {
   const [cart, setCart] = useState([]);
   const [userId] = useState("Surendar");
   const [user, setUser] = useState(null);
+  const [coffeeItems, setCoffeeItems] = useState([]); // State for coffee items
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch user data
     const fetchUserData = async () => {
       try {
         const userDoc = await getDoc(doc(db, 'users', userId));
@@ -32,6 +26,19 @@ const Menu = () => {
     };
 
     fetchUserData();
+
+    // Fetch coffee items from Firestore
+    const fetchCoffeeItems = async () => {
+      try {
+        const coffeeSnapshot = await getDocs(collection(db, 'coffees'));
+        const coffeeList = coffeeSnapshot.docs.map((doc) => doc.data());
+        setCoffeeItems(coffeeList);
+      } catch (error) {
+        console.error('Error fetching coffee items:', error);
+      }
+    };
+
+    fetchCoffeeItems();
   }, [userId]);
 
   const handleAddToCart = (item) => {
@@ -70,15 +77,16 @@ const Menu = () => {
         </div>
       )}
       <div className="flex flex-wrap pb-8 gap-8 justify-center">
-        <MenuCard img={americano} title="Americano" value="₹375.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={choclatecoffee} title="Chocolate Coffee" value="₹340.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={cappuccino} title="Cappuccino" value="₹300.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={masalachai} title="Masala Chai" value="₹225.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={greentea} title="Green Tea" value="₹263.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={mocha} title="Mocha" value="₹338.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={caramel_latteecoffee} title="Caramel Latte Coffee" value="₹338.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={kakako} title="Kakako" value="₹413.00" onAddToCart={handleAddToCart} />
-        <MenuCard img={coldbrew} title="Cold Brew" value="₹188.00" onAddToCart={handleAddToCart} />
+        {/* Render coffee items fetched from Firestore */}
+        {coffeeItems.map((coffee, index) => (
+          <MenuCard 
+            key={index} 
+            img={coffee.image} 
+            title={coffee.name} 
+            value={`₹${coffee.price}`} 
+            onAddToCart={handleAddToCart} 
+          />
+        ))}
       </div>
       <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4">
         {cart.length > 0 && (

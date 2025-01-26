@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import Reviews from "./components/Reviews";
 import LoginRegister from "./components/Login/LoginRegister";
 import OrderEntry from "./components/OrderEntry";
-//lk
+import AdminPage from './components/AdminPage';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
@@ -68,6 +68,7 @@ const App = () => {
             } />
             <Route path="/orderentry" element={<OrderEntry />} />
             <Route path="/login" element={<LoginRegister setIsAuthenticated={handleLogin} setUsername={setUsername} />} />
+            <Route path="/admin-dashboard" element={<AdminPage />} />
           </Routes>
         </main>
         <Footer />

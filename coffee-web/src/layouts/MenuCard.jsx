@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const MenuCard = ({ img, title, value, onAddToCart }) => {
