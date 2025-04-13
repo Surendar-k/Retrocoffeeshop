@@ -4,8 +4,13 @@ import './LoginRegister.css';
 import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import { auth, db } from '../Login/firebase'; // Firebase configuration
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+  deleteUser
+} from 'firebase/auth';
+import { doc, setDoc, getDoc} from 'firebase/firestore';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -61,24 +66,90 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
             toast.error('Unauthorized role.');
           }
         } else {
-          toast.error('User data not found.');
+          // User exists in Authentication but not in Firestore
+          toast.error('User data not found. Please recreate your account.');
+          // Delete the user from authentication to allow re-registration
+          await deleteUser(user);
+          setIsAuthenticated(false);
+          loginLink(); // Switch to login form
         }
 
         setIsAuthenticated(true);
       } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await setDoc(doc(db, 'users', user.uid), {
-          username: username,
-          email: email,
-          role: role,
-        });
-        toast.success('Registration successful. Please log in.');
-        setAction('');
+        // Check if email is already in use
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        
+        if (methods && methods.length > 0) {
+          // Email exists in authentication - try to sign in to check if user data exists
+          try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // Check if user data exists in Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            
+            if (!userDoc.exists()) {
+              // If user exists in Auth but not in Firestore, delete auth user and allow re-registration
+              await deleteUser(user);
+              
+              // Now create a new account
+              const newUserCredential = await createUserWithEmailAndPassword(auth, email, password);
+              await setDoc(doc(db, 'users', newUserCredential.user.uid), {
+                username: username,
+                email: email,
+                role: role,
+              });
+              
+              toast.success('Registration successful. Please log in.');
+              setAction('');
+              setIsLogin(true);
+            } else {
+              toast.error('Account already exists. Please login instead.');
+              setIsLogin(true);
+            }
+          } catch (error) {
+            if (error.code === 'auth/wrong-password') {
+              toast.error('Email already in use with a different password.');
+            } else {
+              // If we can't sign in, try to create a new account
+              const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+              await setDoc(doc(db, 'users', userCredential.user.uid), {
+                username: username,
+                email: email,
+                role: role,
+              });
+              toast.success('Registration successful. Please log in.');
+              setAction('');
+              setIsLogin(true);
+            }
+          }
+        } else {
+          // Email doesn't exist, create new user
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          await setDoc(doc(db, 'users', userCredential.user.uid), {
+            username: username,
+            email: email,
+            role: role,
+          });
+          toast.success('Registration successful. Please log in.');
+          setAction('');
+          setIsLogin(true);
+        }
       }
     } catch (error) {
-      toast.error(error.message);
       console.error(isLogin ? 'Login error:' : 'Registration error:', error);
+      
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('This email address is already registered. Please try logging in instead.');
+        setIsLogin(true);
+      } else if (error.code === 'auth/user-not-found') {
+        toast.error('User not found. Please register first.');
+        setIsLogin(false);
+      } else if (error.code === 'auth/wrong-password') {
+        toast.error('Incorrect password. Please try again.');
+      } else {
+        toast.error(error.message || 'An error occurred. Please try again.');
+      }
     }
   };
 
