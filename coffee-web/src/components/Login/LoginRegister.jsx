@@ -10,7 +10,7 @@ import {
   fetchSignInMethodsForEmail,
   deleteUser
 } from 'firebase/auth';
-import { doc, setDoc, getDoc} from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection } from 'firebase/firestore';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -44,6 +44,28 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
     return true;
   };
 
+  const storeUserInFirestore = async (userId, userData) => {
+    try {
+      console.log(`Attempting to store user in Firestore. UID: ${userId}`, userData);
+      
+      // Explicitly create a reference to the users collection to ensure it exists
+      const usersCollectionRef = collection(db, 'users');
+      
+      // Create a document reference for this specific user
+      const userDocRef = doc(usersCollectionRef, userId);
+      
+      // Set the data
+      await setDoc(userDocRef, userData);
+      
+      console.log(`User data successfully stored in Firestore for UID: ${userId}`);
+      return true;
+    } catch (error) {
+      console.error('Error storing user data in Firestore:', error);
+      toast.error(`Error storing user data: ${error.message}`);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -53,25 +75,44 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        console.log('User signed in successfully:', user.uid);
+        
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
+          console.log('User data retrieved from Firestore:', userDoc.data());
           const userData = userDoc.data();
           setUsername(userData.username);
 
           if (userData.role === 'admin') {
             navigate('/admin-dashboard');
           } else if (userData.role === 'customer') {
-            navigate('/home');
+            navigate('/');
           } else {
             toast.error('Unauthorized role.');
           }
         } else {
+          console.warn('User exists in Authentication but not in Firestore');
           // User exists in Authentication but not in Firestore
-          toast.error('User data not found. Please recreate your account.');
-          // Delete the user from authentication to allow re-registration
-          await deleteUser(user);
-          setIsAuthenticated(false);
-          loginLink(); // Switch to login form
+          toast.error('User data not found. Creating Firestore record now.');
+          
+          // Create user record in Firestore
+          const success = await storeUserInFirestore(user.uid, {
+            username: email.split('@')[0], // Create a default username from email
+            email: email,
+            role: 'customer',
+            createdAt: new Date().toISOString()
+          });
+          
+          if (success) {
+            toast.success('User data created. Redirecting to home page.');
+            setUsername(email.split('@')[0]);
+            navigate('/');
+          } else {
+            // If we couldn't create the user record, log them out
+            await deleteUser(user);
+            setIsAuthenticated(false);
+            loginLink();
+          }
         }
 
         setIsAuthenticated(true);
@@ -94,11 +135,16 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
               
               // Now create a new account
               const newUserCredential = await createUserWithEmailAndPassword(auth, email, password);
-              await setDoc(doc(db, 'users', newUserCredential.user.uid), {
+              const newUser = newUserCredential.user;
+              
+              const userData = {
                 username: username,
                 email: email,
                 role: role,
-              });
+                createdAt: new Date().toISOString()
+              };
+              
+              await storeUserInFirestore(newUser.uid, userData);
               
               toast.success('Registration successful. Please log in.');
               setAction('');
@@ -113,11 +159,17 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
             } else {
               // If we can't sign in, try to create a new account
               const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-              await setDoc(doc(db, 'users', userCredential.user.uid), {
+              const user = userCredential.user;
+              
+              const userData = {
                 username: username,
                 email: email,
                 role: role,
-              });
+                createdAt: new Date().toISOString()
+              };
+              
+              await storeUserInFirestore(user.uid, userData);
+              
               toast.success('Registration successful. Please log in.');
               setAction('');
               setIsLogin(true);
@@ -125,15 +177,27 @@ const LoginRegister = ({ setIsAuthenticated, setUsername }) => {
           }
         } else {
           // Email doesn't exist, create new user
+          console.log('Creating new user with email:', email);
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          await setDoc(doc(db, 'users', userCredential.user.uid), {
+          const user = userCredential.user;
+          console.log('User created successfully in Authentication. UID:', user.uid);
+          
+          const userData = {
             username: username,
             email: email,
             role: role,
-          });
-          toast.success('Registration successful. Please log in.');
-          setAction('');
-          setIsLogin(true);
+            createdAt: new Date().toISOString()
+          };
+          
+          const success = await storeUserInFirestore(user.uid, userData);
+          
+          if (success) {
+            toast.success('Registration successful. Please log in.');
+            setAction('');
+            setIsLogin(true);
+          } else {
+            toast.error('Registration partially completed. User created but data storage failed.');
+          }
         }
       }
     } catch (error) {
