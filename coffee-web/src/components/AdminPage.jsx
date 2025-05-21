@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { collection, getDocs,  deleteDoc, doc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
+
+import { storage,db } from './Login/firebase';  // path to your firebase.js
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { db, storage } from './Login/firebase';
+import { addDoc} from "firebase/firestore";
+
+
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, ArcElement, Tooltip, Legend } from 'chart.js';
 
@@ -24,6 +28,23 @@ const AdminPage = () => {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState({});
+const [setUploadedImageUrl] = useState(null);
+
+ const fetchCoffeeItems = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "coffees"));
+    const items = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    setCoffeeItems(items); // ✅ update state
+  } catch (error) {
+    console.error("Error fetching coffee items:", error);
+  }
+};
+useEffect(() => {
+  fetchCoffeeItems();
+}, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,21 +99,57 @@ const AdminPage = () => {
     fetchData();
   }, []);
   
-
-  // Handle image file selection
-  const handleImageChange = (e) => {
+const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      
-      // Create a preview URL for the selected image
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   };
+const handleAddCoffeeItem = async () => {
+  if (!newCoffee.name.trim() || !newCoffee.price.trim() || !imageFile) {
+    alert("Please fill all fields and select an image");
+    return;
+  }
+
+  setUploading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+    formData.append("upload_preset", "unsigned_preset_coffeeshop");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/damftqrdv/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const data = await res.json();
+
+    if (data.secure_url) {
+  await addDoc(collection(db, "coffees"), {
+    name: newCoffee.name.trim(),
+    price: Number(newCoffee.price),
+    imageUrl: data.secure_url,
+    createdAt: new Date(),
+  });
+
+  alert("Coffee item added successfully!");
+  setNewCoffee({ name: '', price: '' });
+  setImageFile(null);
+  setImagePreview(null);
+  setUploadedImageUrl(data.secure_url); // <-- Set uploaded image URL
+
+    } else {
+      alert("Failed to upload image");
+    }
+  } catch (error) {
+    console.error("Error uploading image: ", error);
+    alert("Error uploading image");
+  }
+
+  setUploading(false);
+};
 
   // Delete a user
   const handleDeleteUser = async (userId) => {
@@ -192,70 +249,7 @@ const AdminPage = () => {
   };
 
   // Function to upload image and add new coffee item to Firestore
-  const handleAddCoffeeItem = async () => {
-    // Validate inputs
-    if (!newCoffee.name || !newCoffee.price) {
-      toast.error('Please enter coffee name and price');
-      return;
-    }
-    
-    if (!imageFile) {
-      toast.error('Please select an image');
-      return;
-    }
-
-    // Validate price is a number
-    if (isNaN(parseFloat(newCoffee.price)) || parseFloat(newCoffee.price) <= 0) {
-      toast.error('Please enter a valid price');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      
-      // 1. Upload image to Firebase Storage with unique filename
-      const timestamp = Date.now();
-      const fileName = `${timestamp}_${imageFile.name.replace(/\s+/g, '_')}`;
-      const storageRef = ref(storage, `coffee-images/${fileName}`);
-      
-      const uploadResult = await uploadBytes(storageRef, imageFile);
-      console.log('Image uploaded successfully');
-      
-      // 2. Get the download URL
-      const downloadURL = await getDownloadURL(uploadResult.ref);
-      console.log('Image URL obtained:', downloadURL);
-      
-      // 3. Add coffee item with image URL to Firestore
-      const coffeeData = {
-        name: newCoffee.name,
-        price: parseFloat(newCoffee.price), // Convert to number
-        image: downloadURL,
-        createdAt: new Date()
-      };
-      
-      const docRef = await addDoc(collection(db, 'coffees'), coffeeData);
-      console.log(`Coffee item added with ID: ${docRef.id}`);
-      
-      // 4. Update local state with new coffee item
-      setCoffeeItems(prev => [...prev, { 
-        id: docRef.id, 
-        ...coffeeData,
-        createdAt: { seconds: Math.floor(Date.now() / 1000) } // Format like Firestore timestamp
-      }]);
-      
-      // 5. Reset form
-      setNewCoffee({ name: '', price: '' });
-      setImageFile(null);
-      setImagePreview(null);
-      
-      toast.success('Coffee item added successfully');
-    } catch (error) {
-      console.error('Error adding coffee item:', error);
-      toast.error(`Failed to add coffee item: ${error.message}`);
-    } finally {
-      setUploading(false);
-    }
-  };
+  
 
   // Prepare data for Bar Chart (Monthly Sales)
   const monthlySales = salesData.reduce((acc, sale) => {
@@ -520,7 +514,7 @@ const AdminPage = () => {
                   <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1">
                     <div className="relative h-48">
                       <img 
-                        src={item.image || defaultPlaceholderImage} 
+                       src={item.imageUrl || defaultPlaceholderImage}
                         alt={item.name} 
                         className="w-full h-full object-cover" 
                         onError={(e) => {

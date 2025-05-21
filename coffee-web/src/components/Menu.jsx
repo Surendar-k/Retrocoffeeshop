@@ -4,6 +4,14 @@ import MenuCard from '../layouts/MenuCard';
 import { db } from './Login/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
+import americano from '../assets/images/americano.png';
+import choclatecoffee from '../assets/images/choclatecoffee.png';
+import cappuccino from '../assets/images/cappuccino.png';
+import masalachai from '../assets/images/masalachai.png';
+import greentea from '../assets/images/greentea.png';
+import mocha from '../assets/images/mocha.png';
+import caramel_latteecoffee from '../assets/images/caramel_latteecoffee.png';
+import kakako from '../assets/images/kakako.png';
 
 const Menu = () => {
   const [cart, setCart] = useState([]);
@@ -12,34 +20,38 @@ const Menu = () => {
   const [coffeeItems, setCoffeeItems] = useState([]); // State for coffee items
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch user data
-    const fetchUserData = async () => {
-      try {
-        const userDoc = await getDoc(doc(db, 'users', userId));
-        if (userDoc.exists()) {
-          setUser(userDoc.data());
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+ useEffect(() => {
+  // Fetch user data
+  const fetchUserData = async () => {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (userDoc.exists()) {
+        setUser(userDoc.data());
       }
-    };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
 
-    fetchUserData();
+  fetchUserData();
 
-    // Fetch coffee items from Firestore
-    const fetchCoffeeItems = async () => {
-      try {
-        const coffeeSnapshot = await getDocs(collection(db, 'coffees'));
-        const coffeeList = coffeeSnapshot.docs.map((doc) => doc.data());
-        setCoffeeItems(coffeeList);
-      } catch (error) {
-        console.error('Error fetching coffee items:', error);
-      }
-    };
+  // Fetch coffee items
+  const fetchCoffeeItems = async () => {
+    try {
+      const coffeeSnapshot = await getDocs(collection(db, 'coffees'));
+      const coffeeList = coffeeSnapshot.docs.map((doc) => ({
+        id: doc.id,                  // ✅ Include ID
+        ...doc.data(),               // ✅ Include other fields like name, image, price
+      }));
+      setCoffeeItems(coffeeList);
+    } catch (error) {
+      console.error('Error fetching coffee items:', error);
+    }
+  };
 
-    fetchCoffeeItems();
-  }, [userId]);
+  fetchCoffeeItems();
+}, [userId]);
+
 
   const handleAddToCart = (item) => {
     const existingItemIndex = cart.findIndex(
@@ -77,16 +89,33 @@ const Menu = () => {
         </div>
       )}
       <div className="flex flex-wrap pb-8 gap-8 justify-center">
-        {/* Render coffee items fetched from Firestore */}
-        {coffeeItems.map((coffee, index) => (
-          <MenuCard 
-            key={index} 
-            img={coffee.image} 
-            title={coffee.name} 
-            value={`₹${coffee.price}`} 
-            onAddToCart={handleAddToCart} 
-          />
-        ))}
+  {/* Render coffee items fetched from Firestore */}
+  {coffeeItems.map((coffee, index) => {
+  console.log('Coffee item:', coffee); // ✅ Check image URL
+  return (
+  <MenuCard 
+  key={coffee.id || index}
+  img={coffee.imageUrl || '/default-image.jpg'} // ✅ Correct key
+  title={coffee.name}
+  value={`₹${coffee.price}`}
+ onAddToCart={handleAddToCart}
+/>
+
+  );
+})}
+
+</div>
+
+      <div className="flex flex-wrap pb-8 gap-8 justify-center">
+        <MenuCard img={americano} title="Americano" value="₹5.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={choclatecoffee} title="Chocolate Coffee" value="₹4.50" onAddToCart={handleAddToCart} />
+        <MenuCard img={cappuccino} title="Cappuccino" value="₹4.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={masalachai} title="Masala Chai" value="₹3.00" onAddToCart={handleAddToCart} />
+        <MenuCard img={greentea} title="Green Tea" value="₹3.50" onAddToCart={handleAddToCart} />
+        <MenuCard img={mocha} title="Mocha" value="₹4.50" onAddToCart={handleAddToCart} />
+        <MenuCard img={caramel_latteecoffee} title="Caramel Latte Coffee" value="₹4.50" onAddToCart={handleAddToCart} />
+        <MenuCard img={kakako} title="Kakako" value="₹5.50" onAddToCart={handleAddToCart} />
+       
       </div>
       <div className="flex flex-col bg-lime-50 w-full rounded-lg p-4">
         {cart.length > 0 && (
